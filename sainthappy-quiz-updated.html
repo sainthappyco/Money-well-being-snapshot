@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sainthappy — What Matters to You?</title>
+<style>
+:root{--green:#244b3b;--cream:#f8f4e9;--yellow:#e9c96b;--ink:#24342d;--muted:#718078;--line:#dfe5dc}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.wrap{max-width:1040px;margin:auto;padding:34px 24px 60px}.brand{font-weight:800;letter-spacing:.08em;font-size:13px;color:var(--green)}.brand span{color:#c7a94d}
+header{display:flex;justify-content:space-between;align-items:center}.progress{font-size:13px;color:var(--muted)}
+.hero{text-align:center;padding:58px 10px 28px}.hero h1{font-family:Georgia,serif;font-size:52px;line-height:1.02;margin:0 0 16px;color:var(--green);font-weight:500}.hero p{max-width:620px;margin:auto;color:#5f6c65;font-size:17px;line-height:1.6}
+.game{display:none}.game.active{display:block}.instruction{text-align:center;margin:15px auto 26px}.instruction h2{font-family:Georgia,serif;font-weight:500;font-size:30px;color:var(--green);margin:0 0 8px}.instruction p{margin:0;color:var(--muted)}
+.board{display:grid;grid-template-columns:1fr 1fr 1.2fr 1fr;gap:14px}.zone,.pool{min-height:390px;border-radius:24px;padding:18px;border:1.5px dashed #cfd8cf;background:rgba(255,255,255,.45)}.pool{background:#fdfcf8;border:1px solid var(--line)}.zone.keep{background:#eef4ee;border-color:#b9cdbd}.zone.no{background:#f5f3ee}.zone h3,.pool h3{margin:0 0 4px;font-size:15px}.zone small,.pool small{color:var(--muted)}
+.cards{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;align-content:flex-start}.card{background:white;border:1px solid #e4e8e2;border-radius:16px;padding:15px 17px;min-height:70px;box-shadow:0 5px 16px rgba(40,65,52,.07);cursor:pointer;transition:.18s;user-select:none;flex:1 1 145px}.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(40,65,52,.12)}.card strong{display:block;font-size:15px}.card em{font-style:normal;color:#89938d;font-size:12px;display:block;margin-top:4px}
+.actions{display:flex;justify-content:center;gap:10px;margin-top:22px}.btn{border:0;border-radius:999px;padding:13px 22px;background:var(--green);color:white;font-weight:700;cursor:pointer}.btn.secondary{background:transparent;color:var(--green);border:1px solid #b7c6bb}.btn:disabled{opacity:.35;cursor:not-allowed}.btn-link{display:inline-block;text-decoration:none;text-align:center}.hint{text-align:center;font-size:12px;color:var(--muted);margin-top:10px}.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.profile-field{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.profile-field label.field-title{display:block;font-weight:700;margin-bottom:8px;color:var(--green)}.profile-field select,.profile-field input[type=text]{width:100%;padding:11px 12px;border:1px solid #cfd8cf;border-radius:10px;background:#fffdf8;color:var(--ink);font:inherit}.choice-list{display:grid;gap:8px}.choice-list label{display:flex;gap:9px;align-items:flex-start;font-size:14px;line-height:1.4}.privacy-note{background:#f8f3df;border:1px solid #eadcae;border-radius:16px;padding:16px;line-height:1.55;font-size:13px}@media(max-width:700px){.profile-grid{grid-template-columns:1fr}}
+.summary{max-width:820px;margin:30px auto}.summarybox{background:white;border-radius:28px;padding:34px;box-shadow:0 10px 35px rgba(40,65,52,.08)}.summary h2{font-family:Georgia,serif;font-size:36px;font-weight:500;color:var(--green);margin:0 0 10px}.summary p{line-height:1.65;color:#627069}.pills{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}.pill{background:#edf3ed;color:var(--green);padding:10px 15px;border-radius:999px;font-weight:700}.next{margin-top:28px;padding:22px;border-radius:20px;background:#f8f3df;border:1px solid #eadcae}.next strong{color:var(--green)}.flower{font-size:28px;color:#c7a94d}
+@media(max-width:1000px){.board{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.board{grid-template-columns:1fr}.zone,.pool{min-height:180px}.hero h1{font-size:42px}}
+
+/* Personified Money Happiness persona sheet */
+.persona-sheet{margin-top:24px;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}.persona-banner{background:var(--green);color:#fff;padding:17px 22px;font-family:Georgia,serif;font-size:25px}.persona-layout{display:grid;grid-template-columns:220px minmax(0,1fr) minmax(200px,.85fr);gap:20px;padding:20px}.persona-side,.persona-main,.persona-motivation{min-width:0}.persona-avatar{height:150px;border-radius:16px;background:linear-gradient(145deg,#edf3ed,#f8f3df);display:flex;align-items:center;justify-content:center;font-size:58px;color:var(--green)}.persona-quote{margin-top:10px;padding:13px;background:#f7f5ef;border-radius:12px;font-family:Georgia,serif;font-style:italic;line-height:1.45;font-size:14px}.persona-facts{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px;line-height:1.8;color:#65736a}.persona-facts b{color:var(--green)}.persona-section{margin-bottom:19px}.persona-section h3{font-family:Georgia,serif;font-weight:500;font-size:22px;color:var(--green);margin:0 0 8px}.persona-section p,.persona-section li{font-size:13px;line-height:1.5;color:#4f6056}.persona-section ul{margin:0;padding-left:18px}.persona-traits{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:15px}.persona-trait{font-size:11px;font-weight:700;padding:6px 9px;border-radius:6px;background:#edf3ed;color:var(--green)}.persona-bar{margin:0 0 10px;font-size:12px;color:#4f6056}.persona-barline{height:10px;border-radius:999px;background:#e8ece7;overflow:hidden;margin-top:4px}.persona-barfill{height:100%;background:var(--yellow);border-radius:999px}.persona-note{font-size:11px;color:var(--muted);line-height:1.45;margin-top:12px}@media(max-width:800px){.persona-layout{grid-template-columns:minmax(0,1fr)}.persona-side,.persona-main,.persona-motivation{grid-column:1/-1;width:100%}.persona-side{display:grid;grid-template-columns:140px minmax(0,1fr);gap:10px}.persona-avatar{height:125px}.persona-quote{margin-top:0}.persona-facts{grid-column:1/-1}.persona-spectrum{width:100%;max-width:none}.spectrum-labels{font-size:11px;gap:6px}.persona-motivation{margin-top:4px}}@media(max-width:520px){.persona-layout{grid-template-columns:minmax(0,1fr);padding:14px}.persona-side{grid-template-columns:1fr}.persona-avatar{height:130px}.persona-quote{margin-top:0}.persona-facts{grid-column:auto}.spectrum-labels{font-size:9px;gap:2px}.persona-spectrum{padding:12px}.spectrum-track-wrap{margin-left:2px;margin-right:2px}}
+
+.persona-spectrum{margin:4px 0 20px;padding:14px;border-radius:14px;background:#f8f7f1;border:1px solid #e5e8df}
+.persona-spectrum h3{font-family:Georgia,serif;font-size:22px;font-weight:500;color:var(--green);margin:0 0 5px}
+.spectrum-sub{font-size:11px;color:var(--muted);line-height:1.45;margin:0 0 15px}
+.spectrum-track-wrap{position:relative;padding-top:24px;margin:8px 4px 10px}
+.spectrum-track{height:9px;border-radius:99px;background:linear-gradient(90deg,#dce6dc 0%,#b8cdb9 25%,#e8d99b 50%,#d4c9a4 75%,#8eaa91 100%)}
+.spectrum-marker{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:30px;height:30px;border:3px solid #fff;border-radius:50%;background:var(--green);box-shadow:0 0 0 2px var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.spectrum-labels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;font-size:9px;line-height:1.25;text-align:center;color:#65736a}
+.spectrum-labels span:first-child{text-align:left}.spectrum-labels span:last-child{text-align:right}
+.spectrum-current{font-size:12px;font-weight:700;color:var(--green);margin-top:12px}
+@media(max-width:520px){.spectrum-labels{font-size:8px}.persona-spectrum{padding:12px}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="brand">SAINTHAPPY<span>•</span>CO</div><div class="progress" id="progress">Start</div></header>
+
+<section class="hero" id="intro">
+<div class="flower">✦</div>
+<h1>What actually matters<br>to you?</h1>
+<p>Forget what you <em>should</em> value. Let's find the things you genuinely want more of in your life.</p>
+<div class="actions"><button class="btn" onclick="beginProfile()">Build my profile →</button></div>
+</section>
+
+<section class="game summary" id="profileGame">
+<div class="summarybox">
+<div class="flower">✦</div><p style="margin:0;color:var(--muted);font-weight:700;letter-spacing:.05em">PART 1 · YOUR PROFILE</p>
+<h2>First, a little about you.</h2><p>There are no right answers. This helps shape a light-hearted money persona for your reflection — not a psychological assessment.</p>
+<div class="profile-grid">
+<div class="profile-field"><label class="field-title" for="surveyName">Name <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="surveyName" type="text" maxlength="80" autocomplete="name" placeholder="What should we call you?"></div>
+<div class="profile-field"><label class="field-title" for="surveyDate">Date of survey</label><input id="surveyDate" type="date" required></div>
+<div class="profile-field"><label class="field-title" for="ageBand">Which age group are you in?</label><select id="ageBand"><option value="Prefer not to say">Prefer not to say</option><option>Under 25</option><option>25–29</option><option>30–39</option><option>40–49</option><option>50–59</option><option>60+</option></select></div>
+<div class="profile-field"><label class="field-title" for="occupation">What best describes your work?</label><select id="occupation"><option value="Prefer not to say">Prefer not to say</option><option>Student / early career</option><option>Employed / professional</option><option>Business owner / entrepreneur</option><option>Freelancer / self-employed</option><option>Caregiver / not currently working</option><option>Retired / semi-retired</option><option>Other</option></select></div>
+<div class="profile-field"><label class="field-title" for="lifeStage">Where are you in life right now?</label><select id="lifeStage"><option>Finding my footing</option><option>Building my future</option><option>Growing my wealth</option><option>Supporting family / others</option><option>Changing direction</option><option>Redesigning my life</option><option>Enjoying what I’ve built</option></select></div>
+<div class="profile-field"><label class="field-title" for="personality">Which feels most like your approach?</label><select id="personality"><option value="The Explorer">The Explorer — I want options and new experiences</option><option value="The Strategist">The Strategist — I like plans and making things happen</option><option value="The Guardian">The Guardian — I value security and caring for people</option><option value="The Builder">The Builder — I want to grow something meaningful</option><option value="The Free Spirit">The Free Spirit — I value flexibility and independence</option></select></div>
+<div class="profile-field" style="grid-column:1/-1"><label class="field-title">What are you curious about? Select all that apply.</label><div class="choice-list" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+<label><input type="checkbox" name="interest" value="Money management"> Money management & budgeting</label><label><input type="checkbox" name="interest" value="Investing"> Investing & wealth building</label><label><input type="checkbox" name="interest" value="Insurance & protection"> Insurance & protection</label><label><input type="checkbox" name="interest" value="Retirement & passive income"> Retirement & passive income</label><label><input type="checkbox" name="interest" value="Property"> Property</label><label><input type="checkbox" name="interest" value="Business & entrepreneurship"> Business & entrepreneurship</label><label><input type="checkbox" name="interest" value="Family financial planning"> Family financial planning</label><label><input type="checkbox" name="interest" value="Lifestyle & financial freedom"> Lifestyle & financial freedom</label></div></div>
+</div>
+<div class="privacy-note" style="margin-top:18px"><strong>Privacy &amp; Data Protection</strong><p style="margin:8px 0">Your information will be handled in accordance with Singapore’s Personal Data Protection Act (PDPA). We use your responses to help you reflect on your relationship with money and, where you have agreed, to understand broader patterns in financial interests, values, and life stages.</p><p style="margin:8px 0">Any information shared publicly will be anonymised and presented as aggregated findings. Your individual responses and persona will not be shown to other participants.</p><p style="margin:8px 0 0">Please avoid entering identifying or highly sensitive information. By continuing, you acknowledge this privacy notice and consent to the stated use of your information.</p></div>
+<label style="display:flex;gap:11px;align-items:flex-start;margin:18px 0 10px;line-height:1.5"><input id="researchConsent" type="checkbox" style="margin-top:4px;accent-color:var(--green);width:18px;height:18px;flex:0 0 auto"><span><strong>I have read the privacy notice and agree to continue with this reflective activity.</strong> My answers are not transmitted from this prototype.</span></label>
+<label style="display:flex;gap:11px;align-items:flex-start;margin:10px 0 18px;line-height:1.5"><input id="aggregateConsent" type="checkbox" style="margin-top:4px;accent-color:var(--green);width:18px;height:18px;flex:0 0 auto"><span><strong>Optional: I’m open to contributing my responses to anonymised group findings.</strong> This is a preference for a future version only; no responses are collected or shared by this prototype.</span></label>
+<div class="actions"><button class="btn secondary" onclick="backToIntro()">Back</button><button class="btn" id="profileContinue" onclick="submitProfile()" disabled>Continue to values →</button></div>
+</div></section>
+
+<section class="game" id="sortGame">
+<div class="instruction"><h2>Build your “Keep” pile</h2><p>Tap a card to move it. Start with your gut — don't overthink it.</p></div>
+<div class="board">
+<div class="zone keep"><h3>KEEP</h3><small>Feels important to me</small><div class="cards" id="keep"></div></div>
+<div class="pool"><h3>YOUR CARDS</h3><small>Drag a card to where it belongs</small><div class="cards" id="pool"></div></div>
+<div class="zone maybe"><h3>MAYBE</h3><small>Important, but not sure right now</small><div class="cards" id="maybe"></div></div><div class="zone no"><h3>NOT ME RIGHT NOW</h3><small>Not a priority for this season</small><div class="cards" id="no"></div></div>
+</div>
+<div class="actions"><button class="btn" id="continue" disabled onclick="narrow()">Choose my Top 5</button></div>
+<div class="hint">On touch screens, tap cards to cycle them between piles.</div>
+</section>
+
+<section class="game" id="narrowGame">
+<div class="instruction"><h2>Now, make it harder.</h2><p>You've chosen <span id="keepCount"></span>. Keep only the <b>5</b> that feel most like you.</p><p style="margin-top:8px"><b id="topCount">0 / 5</b></p></div>
+<div class="summarybox"><div class="cards" id="narrowCards"></div></div>
+<div class="actions"><button class="btn" id="finish" disabled onclick="finish()">Reveal my values</button></div>
+<div class="hint">Tap a card to keep it. Tap again to let it go.</div>
+</section>
+
+<section class="game summary" id="result">
+<div class="summarybox">
+<div class="flower">✦</div>
+<p style="margin:0;color:var(--muted);font-weight:700;letter-spacing:.05em">YOUR MONEY PERSONA</p><h2 id="personaTitle">The Explorer</h2><p id="personaMeta"></p><p id="personaStory"></p><div class="pills" id="interestPills"></div><hr style="border:0;border-top:1px solid var(--line);margin:24px 0"><h2>Your values, at a glance.</h2>
+<p>These aren't “good” or “bad” values. They're the things your choices suggest you want your life to make room for <b>right now</b>.</p>
+<div class="pills" id="pills"></div>
+<p id="reflection"></p>
+<div class="next"><strong>There's one more interesting question.</strong><br><br>
+How well does your current financial life actually support the things you say matter to you?
+<br><br><button class="btn" onclick="startMeasurement()">Measure my Money Happiness →</button>
+</div>
+</div>
+</section>
+
+<section class="game summary" id="measure">
+<div class="summarybox">
+<div class="flower">✦</div>
+<div style="color:var(--muted);font-size:13px" id="measureStep">1 / 4</div>
+<h2 id="measureTitle">Freedom</h2>
+<p id="measurePrompt"></p>
+<div id="options" style="margin-top:24px"></div>
+</div>
+</section>
+
+<section class="game summary" id="measureResult">
+<div class="summarybox">
+<div class="flower">✦</div>
+<p style="margin:0;color:var(--muted);font-weight:700;letter-spacing:.05em">YOUR MONEY HAPPINESS SNAPSHOT</p>
+<div class="persona-sheet"><div class="persona-banner"><span id="snapshotPersonaName">Your Money Persona</span></div><div class="persona-layout">
+<div class="persona-side"><div class="persona-avatar" id="personaAvatar" aria-hidden="true">✦</div><div class="persona-quote" id="personaQuote">“I want my money to make room for what matters.”</div><div class="persona-facts"><div><b>Life stage:</b> <span id="personaLifeStage">—</span></div><div><b>Work:</b> <span id="personaWork">—</span></div><div><b>Style:</b> <span id="personaStyle">—</span></div></div></div>
+<div class="persona-main"><div class="persona-traits" id="personaTraits"></div><div class="persona-spectrum"><h3>My life-stage spectrum</h3><p class="spectrum-sub">A gentle snapshot of where you may be right now, shaped by your age range, work situation and how supported you feel. It’s a reflection, not a box to fit into.</p><div class="spectrum-track-wrap"><div class="spectrum-track"></div><div class="spectrum-marker" id="spectrumMarker" title="Your current position">✦</div></div><div class="spectrum-labels"><span>Finding footing</span><span>Building</span><span>Expanding</span><span>Reimagining</span><span>More freedom</span></div><div class="spectrum-current" id="spectrumCurrent">Your current chapter</div><p class="persona-note" id="spectrumExplanation">Your position is a prompt for reflection, not a judgement.</p></div><div class="persona-section"><h3>What matters to me</h3><ul id="personaGoals"></ul></div><div class="persona-section"><h3>Where I may feel stretched</h3><p id="personaFrustrations"></p></div><div class="persona-section"><h3>My money story</h3><p id="personaBio"></p></div></div>
+<div class="persona-motivation"><div class="persona-section"><h3>My Money Happiness</h3><div style="font-family:Georgia,serif;font-size:42px;color:var(--green);line-height:1"><span id="score">0</span><small style="font-size:16px"> / 100</small></div><h2 id="profile" style="font-size:20px;margin:7px 0 10px">Your profile</h2><p id="moneyReflection" style="font-size:12px"></p></div><div class="persona-section"><h3>How supported I feel</h3><div id="personaBars"></div><p class="persona-note">These bars reflect your answers in this activity, not an objective measure of your financial health or a validated assessment.</p></div></div>
+</div></div>
+<div class="next"><strong>Where would you like to go next?</strong><br><br>
+Your values tell us what matters. These answers offer a quick reflection on how supported you feel today — they are not a validated financial assessment.
+<br><br><button class="btn" onclick="openPath('explorePath')">Explore my results myself</button>
+<br><br><button class="btn secondary" onclick="openPath('deepDivePath')">Deep dive with me →</button>
+<br><br><button class="btn secondary" onclick="downloadResultPage()">Print / save my result as PDF ↓</button>
+</div>
+<div style="margin-top:18px;padding:18px 20px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.48)">
+<strong style="color:var(--green)">Disclaimer</strong>
+<p style="font-size:13px;margin-bottom:0">This experience is reflective in nature and is intended to help you think about your values and relationship with money. It is not a comprehensive assessment of your financial circumstances. For professional financial advice tailored to your needs, please reach out to Sharon to arrange an advisory session.</p>
+</div>
+<div style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.6">
+<strong>Frameworks informing this reflection</strong><br>
+Informed by <a href="https://selfdeterminationtheory.org/the-theory/" target="_self">Self-Determination Theory (SDT)</a>, the <a href="https://ppc.sas.upenn.edu/node/708" target="_self">PERMA model of well-being</a>, and the <a href="https://www.consumerfinance.gov/consumer-tools/financial-well-being/about/" target="_self">Consumer Financial Protection Bureau’s Financial Well-Being Scale</a>. This activity adapts broad ideas from these frameworks; it is not any of the original validated questionnaires or scales.
+</div>
+</div>
+</section>
+
+<section class="game summary" id="explorePath">
+<div class="summarybox">
+<div class="flower">✦</div>
+<p style="margin:0;color:var(--muted);font-weight:700;letter-spacing:.05em">YOUR PERSONAL REFLECTION GUIDE</p>
+<h2>Make your money work for what matters.</h2>
+<p id="diyIntro"></p>
+<div class="next"><strong>1. What do you want more room for?</strong><p id="diyValues"></p><p>Pick one value from your Top 5. What would it look like in your everyday life if this value had 10% more room?</p></div>
+<div class="next"><strong>2. Where do you feel supported — or stretched?</strong><p id="diySnapshot"></p><p>Which of your answers feels most true? What is one real-life example from the past month?</p></div>
+<div class="next"><strong>3. Choose one small next step.</strong><p>Finish this sentence: “To make more room for what matters, one thing I could clarify or change is…”</p><p>Keep it small. You don't have to solve your whole financial life today.</p></div>
+<div class="actions"><button class="btn secondary" onclick="backToSnapshot()">← Back to snapshot</button><button class="btn" onclick="openPath('deepDivePath')">I’d like to explore this together →</button></div>
+</div>
+</section>
+
+<section class="game summary" id="deepDivePath">
+<div class="summarybox">
+<div class="flower">✦</div>
+<p style="margin:0;color:var(--muted);font-weight:700;letter-spacing:.05em">SAINTHAPPY MONEY MAPPING</p>
+<h2>Let's connect the dots.</h2>
+<p>Your values are the starting point. A Money Mapping conversation looks at how your financial system supports the life you want to build — without assuming you need a particular product or that everything needs fixing.</p>
+<div class="next"><strong>What we can explore together</strong>
+<p><b>Cash flow & breathing room</b><br>What your money needs to cover now, and what can safely be set aside.</p>
+<p><b>Liquidity & resilience</b><br>How much flexibility you have if life changes or an unexpected cost comes up.</p>
+<p><b>Protection & risk</b><br>What could disrupt your plans, and where a gap may or may not exist.</p>
+<p><b>Capital & future choices</b><br>How your resources can support the priorities and options you care about.</p></div>
+<div class="next"><strong>Want to continue the conversation?</strong><p>Reach out through whichever channel feels easiest. We can arrange a Money Mapping conversation and explore your circumstances in more detail.</p><div class="actions" style="flex-wrap:wrap"><a class="btn btn-link" href="https://www.instagram.com/sharonlinds/" target="_blank" rel="noopener noreferrer">Instagram ↗</a><button class="btn secondary" type="button" onclick="openWhatsAppAndCopyUsername()">WhatsApp ↗</button></div><p style="font-size:12px;margin-bottom:0">WhatsApp username: <b>sharonlinds</b>. The button opens WhatsApp and copies the username so you can search for it. A direct chat link needs your WhatsApp phone number or a verified profile link.</p><div class="actions"><button class="btn secondary" onclick="backToSnapshot()">← Back to snapshot</button></div></div>
+</div>
+</section>
+</div>
+
+<script>
+const values=[
+["Freedom","Room to choose your own way"],["Security","Knowing you’ll be okay"],["Family","Being there for your people"],["Adventure","Trying, exploring, experiencing"],["Growth","Becoming more capable"],["Peace","A life that feels calm"],["Achievement","Doing things you’re proud of"],["Love","Deep connection and belonging"],["Health","Having energy for life"],["Contribution","Making a difference"],["Creativity","Making and expressing"],["Independence","Being able to rely on yourself"],["Joy","Having fun and enjoying life"],["Stability","A steady foundation"],["Learning","Understanding and discovering"],["Time","Having more of it for yourself"]
+];
+
+let state={pool:[...values],keep:[],maybe:[],no:[],top5:[]};
+
+function el(id){return document.getElementById(id)}
+
+let participantProfile={name:"",surveyDate:"",age:"Prefer not to say",occupation:"Prefer not to say",lifeStage:"Building my future",personality:"The Explorer",interests:[]};
+function beginProfile(){el("intro").style.display="none";el("profileGame").classList.add("active");if(!el("surveyDate").value)el("surveyDate").value=new Date().toLocaleDateString("en-CA");el("progress").textContent="Profile · 1 / 4";}
+function backToIntro(){el("profileGame").classList.remove("active");el("intro").style.display="block";el("progress").textContent="Start";}
+function submitProfile(){
+ if(!el("researchConsent").checked){alert("Please acknowledge the privacy notice to continue.");return;}
+ participantProfile={name:el("surveyName").value.trim(),surveyDate:el("surveyDate").value,age:el("ageBand").value,occupation:el("occupation").value,lifeStage:el("lifeStage").value,personality:el("personality").value,interests:[...document.querySelectorAll('input[name="interest"]:checked')].map(x=>x.value)};
+ el("profileGame").classList.remove("active");start();
+}
+el("researchConsent").addEventListener("change",()=>{el("profileContinue").disabled=!el("researchConsent").checked;});
+function start(){
+  el("profileGame").classList.remove("active");
+  el("intro").style.display="none";
+  el("sortGame").classList.add("active");
+  el("progress").textContent="1 / 3";
+  render();
+}
+
+function card(v, zone, i){
+  const c=document.createElement("div");
+  c.className="card";
+  c.draggable=true;
+  c.dataset.zone=zone;
+  c.dataset.index=i;
+  c.innerHTML="<strong>"+v[0]+"</strong><em>"+v[1]+"</em>";
+
+  c.addEventListener("dragstart",e=>{
+    e.dataTransfer.setData("text/plain",JSON.stringify({zone,index:i}));
+    c.style.opacity=".45";
+  });
+  c.addEventListener("dragend",()=>c.style.opacity="1");
+
+  // Mobile/touch-friendly fallback: tap cycles Pool -> Keep -> Maybe -> Not now -> Pool.
+  c.addEventListener("click",()=>{
+    if(zone==="pool") move(zone,i,"keep");
+    else if(zone==="keep") move(zone,i,"maybe");
+    else if(zone==="maybe") move(zone,i,"no");
+    else move(zone,i,"pool");
+  });
+  return c;
+}
+
+function setupDrop(zoneId, target){
+  const z=el(zoneId);
+  z.ondragover=e=>{e.preventDefault();z.style.transform="scale(1.01)"};
+  z.ondragleave=()=>z.style.transform="";
+  z.ondrop=e=>{
+    e.preventDefault();z.style.transform="";
+    try{
+      const d=JSON.parse(e.dataTransfer.getData("text/plain"));
+      move(d.zone,d.index,target);
+    }catch{}
+  };
+}
+
+function move(from,i,to){
+  const v=state[from].splice(i,1)[0];
+  if(v) state[to].push(v);
+  render();
+}
+
+function render(){
+  ["pool","keep","maybe","no"].forEach(z=>{
+    const box=el(z);
+    if(!box)return;
+    box.innerHTML="";
+    state[z].forEach((v,i)=>box.appendChild(card(v,z,i)));
+  });
+  el("continue").disabled=state.keep.length<5;
+  el("keepCount").textContent=state.keep.length;
+}
+
+function narrow(){
+  el("sortGame").classList.remove("active");
+  el("narrowGame").classList.add("active");
+  el("progress").textContent="2 / 3";
+  state.keep.forEach(v=>v.selected=false);
+  renderNarrow();
+}
+
+function renderNarrow(){
+  const b=el("narrowCards"); b.innerHTML="";
+  state.keep.forEach(v=>{
+    const c=document.createElement("div");
+    c.className="card";
+    c.style.opacity=v.selected?"1":".45";
+    c.innerHTML="<strong>"+v[0]+"</strong><em>"+v[1]+"</em>";
+    c.onclick=()=>{v.selected=!v.selected;renderNarrow()};
+    b.appendChild(c);
+  });
+  const n=state.keep.filter(v=>v.selected).length;
+  el("topCount").textContent=n+" / 5";
+  el("finish").disabled=n!==5;
+}
+
+function finish(){
+  state.top5=state.keep.filter(v=>v.selected);
+  el("narrowGame").classList.remove("active");
+  el("result").classList.add("active");
+  el("progress").textContent="3 / 3";
+  el("pills").innerHTML=state.top5.map(v=>"<div class='pill'>"+v[0]+"</div>").join("");
+  el("personaTitle").textContent=participantProfile.personality;
+  el("personaMeta").textContent=(participantProfile.name?participantProfile.name+" · ":"")+participantProfile.age+" · "+participantProfile.occupation+" · "+participantProfile.lifeStage+" · Survey: "+participantProfile.surveyDate;
+  const personaDescriptions={"The Explorer":"You chose an approach centred on options, curiosity and new experiences.","The Strategist":"You chose an approach centred on planning, intentional choices and making progress.","The Guardian":"You chose an approach centred on security, responsibility and caring for people.","The Builder":"You chose an approach centred on creating, growing and building something meaningful.","The Free Spirit":"You chose an approach centred on flexibility, independence and living on your terms."};
+  el("personaStory").textContent=(personaDescriptions[participantProfile.personality]||"")+" Your Top 5 values are your own snapshot of what matters in this season — not a fixed personality label.";
+  el("interestPills").innerHTML=participantProfile.interests.length?participantProfile.interests.map(x=>"<span class='pill'>"+x+"</span>").join(""):"<span class='pill'>No interests selected</span>";
+  const names=state.top5.map(v=>v[0]);
+  el("reflection").textContent="Your choices point toward "+names.slice(0,-1).join(", ")+(names.length>1?" and ":"")+names[names.length-1]+". The interesting part isn't simply what you value — it's whether your money, time and choices currently give those values room to exist.";
+}
+
+function startMeasurement(){
+  el("result").classList.remove("active");
+  el("measure").classList.add("active");
+  el("progress").textContent="Money Happiness";
+  renderMeasure();
+}
+
+const measureQuestions=[
+  ["Freedom","If something important changed in your life, how much room would money give you to respond?",["Very little","Some","Quite a lot","A lot"]],
+  ["Security","If an unexpected expense or income disruption happened, how confident are you that you could handle it?",["Not confident","A little confident","Mostly confident","Very confident"]],
+  ["Alignment","How much does your current life make room for the values you just chose?",["Very little","Some","Quite a lot","A lot"]],
+  ["Progress & enjoyment","Does the way you use money help you enjoy life today while moving toward what matters to you?",["Not really","A little","Mostly","Definitely"]]
+]
+let answers=[];
+
+function renderMeasure(){
+  const q=measureQuestions[answers.length];
+  el("measureTitle").textContent=q[0];
+  el("measurePrompt").textContent=q[1];
+  const box=el("options"); box.innerHTML="";
+  q[2].forEach((x,i)=>{
+    const b=document.createElement("button");
+    b.className="btn secondary"; b.style.width="100%"; b.style.marginBottom="10px"; b.textContent=x;
+    b.onclick=()=>{answers.push(i+1); if(answers.length<measureQuestions.length)renderMeasure();else showMeasureResult()};
+    box.appendChild(b);
+  });
+  el("measureStep").textContent=(answers.length+1)+" / "+measureQuestions.length;
+}
+
+function showMeasureResult(){
+  const score=Math.round(answers.reduce((a,b)=>a+b,0)/(measureQuestions.length*4)*100);
+  el("measure").classList.remove("active");
+  el("measureResult").classList.add("active");
+  el("progress").textContent="Your Money Happiness";
+  el("score").textContent=score;
+  let label=score>=75?"Supported & Spacious":score>=55?"Secure, but Constrained":"Ready for More Breathing Room";
+  el("profile").textContent=label;
+  const top=state.top5.map(v=>v[0]).join(", ");
+  el("moneyReflection").textContent="Your values are "+top+". This playful Money Happiness snapshot is inspired by established ideas in financial well-being, autonomy and life satisfaction; it is not itself a validated scale. The useful question is where your current financial system supports those values — and where it gets in their way.";
+  renderMoneyPersona(label, score);
+}
+
+function renderMoneyPersona(label, score){
+  const names=state.top5.map(v=>v[0]);
+  const person=participantProfile.personality;
+  const personaNames={"The Explorer":"The Freedom-Seeking Explorer","The Strategist":"The Intentional Strategist","The Guardian":"The Steady Guardian","The Builder":"The Purposeful Builder","The Free Spirit":"The Independent Free Spirit"};
+  const quotes={"The Explorer":"“I want room to explore what life could look like.”","The Strategist":"“I want my choices today to move me somewhere meaningful.”","The Guardian":"“I want to know the people and things I care about are supported.”","The Builder":"“I want to build a life that reflects what matters to me.”","The Free Spirit":"“I want options, flexibility, and room to choose my own way.”"};
+  const avatars={"The Explorer":"✧","The Strategist":"⌁","The Guardian":"❋","The Builder":"✦","The Free Spirit":"〰"};
+  el("snapshotPersonaName").textContent=personaNames[person]||"Your Money Persona";
+  el("personaAvatar").textContent=avatars[person]||"✦";
+  el("personaQuote").textContent=quotes[person]||"“I want my money to make room for what matters.”";
+  el("personaLifeStage").textContent=participantProfile.lifeStage;
+  el("personaWork").textContent=participantProfile.occupation;
+  el("personaStyle").textContent=person;
+  renderLifeStageSpectrum(score);
+  el("personaTraits").innerHTML=names.map(n=>`<span class="persona-trait">${escapeHtml(n)}</span>`).join("");
+  el("personaGoals").innerHTML=names.slice(0,3).map(n=>`<li>Make more room for ${escapeHtml(n.toLowerCase())}</li>`).join("");
+  const low=answers.map((v,i)=>({v,i})).sort((a,b)=>a.v-b.v)[0];
+  const stretch=["You may want more flexibility if life changes, or a clearer sense of what options are available.","You may want greater confidence about handling an unexpected cost or income disruption.","You may want your everyday choices to make more room for the values you named.","You may be looking for a better balance between enjoying life now and moving toward future priorities."];
+  el("personaFrustrations").textContent=stretch[low.i];
+  el("personaBio").textContent=`Right now, ${participantProfile.lifeStage.toLowerCase()}, you identify most with ${person.toLowerCase()}. Your Top 5 values are ${names.join(", ")}. Your answers suggest that the most useful next step is to explore how your current financial setup supports these priorities — and where you would like more room. This is a reflection prompt, not a fixed personality label.`;
+  el("personaBars").innerHTML=measureQuestions.map((q,i)=>`<div class="persona-bar">${escapeHtml(q[0])}<div class="persona-barline"><div class="persona-barfill" style="width:${Math.round((answers[i]/4)*100)}%"></div></div></div>`).join("");
+}
+function renderLifeStageSpectrum(score){
+  const ageMap={"Under 25":18,"25–29":27,"30–39":35,"40–49":45,"50–59":55,"60+":65,"Prefer not to say":35};
+  const age=ageMap[participantProfile.age]??35;
+  let agePosition=Math.max(0,Math.min(100,((age-18)/52)*100));
+  const occ=participantProfile.occupation.toLowerCase();
+  let workNudge=0;
+  if(occ.includes("student")||occ.includes("early career"))workNudge=-12;
+  else if(occ.includes("business owner")||occ.includes("self-employed")||occ.includes("professional"))workNudge=7;
+  else if(occ.includes("caregiver"))workNudge=-3;
+  else if(occ.includes("retired"))workNudge=10;
+  const life=participantProfile.lifeStage.toLowerCase();
+  let chapterNudge=0;
+  if(life.includes("footing"))chapterNudge=-18;
+  else if(life.includes("building"))chapterNudge=-7;
+  else if(life.includes("wealth"))chapterNudge=7;
+  else if(life.includes("supporting"))chapterNudge=0;
+  else if(life.includes("changing"))chapterNudge=4;
+  else if(life.includes("redesigning"))chapterNudge=10;
+  else if(life.includes("enjoying"))chapterNudge=16;
+  // Lower life-satisfaction answers suggest a need for more foundations and options; higher answers suggest greater felt room.
+  const satisfactionPosition=(score/100)*100;
+  const position=Math.max(3,Math.min(97,Math.round(agePosition*.30+satisfactionPosition*.45+50*.25+workNudge+chapterNudge)));
+  el("spectrumMarker").style.left=position+"%";
+  const chapters=[
+    {max:20,title:"Finding footing",desc:"You may be focused on creating steadiness, discovering options and building a foundation."},
+    {max:40,title:"Building your base",desc:"You may be balancing present needs with the foundations you want for the future."},
+    {max:60,title:"Expanding your options",desc:"You may be growing capacity while working out which opportunities are worth making room for."},
+    {max:80,title:"Reimagining what’s next",desc:"You may be reassessing what success looks like and how you want your resources to serve you."},
+    {max:100,title:"Making room for more freedom",desc:"You may be looking for more choice, meaning or flexibility in how you use what you’ve built."}
+  ];
+  const chapter=chapters.find(x=>position<=x.max)||chapters[4];
+  el("spectrumCurrent").textContent="Your current chapter: "+chapter.title;
+  el("spectrumExplanation").textContent=chapter.desc+" This position combines your age range, work situation, selected life stage and Money Happiness answers; it is not a prediction or an objective measure of progress.";
+}
+
+function openPath(id){
+  ["measureResult","explorePath","deepDivePath"].forEach(x=>el(x).classList.remove("active"));
+  el(id).classList.add("active");
+  el("progress").textContent=id==="explorePath"?"Your reflection guide":"Money Mapping";
+  if(id==="explorePath"){
+    const names=state.top5.map(v=>v[0]);
+    el("diyIntro").textContent="Your snapshot is a starting point, not a verdict. Use these prompts to connect your answers to real choices and experiences.";
+    el("diyValues").textContent="Your Top 5 values: "+names.join(", ")+". Which one feels most important to make room for in this season of life?";
+    const labels=measureQuestions.map((q,i)=>q[0]+": "+q[2][(answers[i]||1)-1]);
+    el("diySnapshot").textContent=labels.join(" · ");
+  }
+}
+function downloadResultPage(){
+  const modal=document.getElementById("consentModal");
+  if(modal) modal.style.display="flex";
+}
+let signatureDrawingStarted=false;
+function setupSignaturePad(){
+  const canvas=document.getElementById("signaturePad");
+  if(!canvas || canvas.dataset.ready) return;
+  const ratio=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  canvas.width=Math.max(1,Math.round(rect.width*ratio));
+  canvas.height=Math.max(1,Math.round(rect.height*ratio));
+  const ctx=canvas.getContext("2d");
+  ctx.scale(ratio,ratio); ctx.strokeStyle="#244b3b"; ctx.lineWidth=2.2; ctx.lineCap="round"; ctx.lineJoin="round";
+  let drawing=false;
+  function point(e){const r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
+  canvas.addEventListener("pointerdown",e=>{drawing=true;signatureDrawingStarted=true;canvas.setPointerCapture(e.pointerId);const p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y);e.preventDefault();});
+  canvas.addEventListener("pointermove",e=>{if(!drawing)return;const p=point(e);ctx.lineTo(p.x,p.y);ctx.stroke();e.preventDefault();});
+  const end=()=>{drawing=false;}; canvas.addEventListener("pointerup",end);canvas.addEventListener("pointercancel",end);
+  canvas.dataset.ready="1";
+}
+function clearSignature(){
+  const canvas=document.getElementById("signaturePad");
+  if(canvas){const ctx=canvas.getContext("2d");ctx.clearRect(0,0,canvas.width,canvas.height);}
+  signatureDrawingStarted=false;
+}
+function updateConsentButton(){
+  const check=document.getElementById("consentCheck");
+  const button=document.getElementById("consentContinue");
+  if(check && button) button.disabled=!check.checked;
+}
+function acceptConsentAndDownload(){
+  const check=document.getElementById("consentCheck");
+  if(!check || !check.checked) return;
+  const typedName=(document.getElementById("typedSignature")?.value||"").trim();
+  const canvas=document.getElementById("signaturePad");
+  const drawnSignature=signatureDrawingStarted && canvas ? canvas.toDataURL("image/png") : "";
+  if(!typedName && !drawnSignature){
+    const msg=document.getElementById("signatureRequired"); if(msg) msg.style.display="block";
+    return;
+  }
+  const acknowledgement={checked:true, timestamp:new Date().toLocaleString(), typedName, drawnSignature};
+  document.getElementById("consentModal").style.display="none";
+  proceedDownloadResultPage(acknowledgement);
+}
+function proceedDownloadResultPage(acknowledgement){
+  const topNames=state.top5.map(v=>v[0]);
+  const score=el("score").textContent;
+  const profile=el("profile").textContent;
+  const answersText=measureQuestions.map((q,i)=>`<li><b>${escapeHtml(q[0])}:</b> ${escapeHtml(q[2][answers[i]-1] || "Not answered")}</li>`).join("");
+  const valuesHtml=topNames.map(v=>`<span class="pill">${escapeHtml(v)}</span>`).join("");
+  const safeReflection=escapeHtml(el("moneyReflection").textContent);
+  const safeProfile=escapeHtml(profile);
+  const safeScore=escapeHtml(score);
+  const date=new Date().toLocaleDateString();
+  const ackTime=escapeHtml(acknowledgement.timestamp);
+  const typedSignature=escapeHtml(acknowledgement.typedName||"");
+  const signatureBlock=acknowledgement.drawnSignature ? `<img alt="Drawn signature" src="${acknowledgement.drawnSignature}" style="display:block;max-width:300px;max-height:90px;object-fit:contain;object-position:left center;margin:8px 0">` : "";
+  const printView=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Your Sainthappy Money Happiness Snapshot</title><style>
+  :root{--green:#244b3b;--cream:#f8f4e9;--yellow:#e9c96b;--ink:#24342d;--muted:#718078;--line:#dfe5dc}
+  *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.55}.wrap{max-width:800px;margin:auto;padding:28px 22px 42px}.brand{font-weight:800;letter-spacing:.08em;font-size:13px;color:var(--green)}.brand span{color:#c7a94d}.sheet{background:white;border-radius:22px;padding:34px;margin-top:22px}h1,h2{font-family:Georgia,serif;color:var(--green);font-weight:500;line-height:1.15}h1{font-size:34px;margin:10px 0}h2{font-size:22px;margin:24px 0 8px}.flower{font-size:26px;color:#c7a94d}.eyebrow{font-size:11px;letter-spacing:.08em;font-weight:700;color:var(--muted)}.score{font-family:Georgia,serif;font-size:64px;line-height:1;color:var(--green);margin:16px 0}.pills{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.pill{display:inline-block;background:#edf3ed;color:var(--green);padding:7px 12px;border-radius:999px;font-weight:700}.next{margin-top:22px;padding:18px;border-radius:14px;background:#f8f3df;border:1px solid #eadcae}.disclaimer{background:#f8f4e9;border:1px solid var(--line);padding:16px;border-radius:14px;font-size:12px}.ack-record{border:1px solid var(--line);padding:16px;border-radius:14px;margin-top:14px;break-inside:avoid}.ack-status{font-weight:700;color:var(--green)}.signature-line{border-bottom:1px solid #aab7ad;min-height:42px;margin-top:8px}.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.links a{display:inline-block;min-width:155px;text-align:center;padding:11px 18px;border-radius:999px;background:var(--green);color:#fff;text-decoration:none;font-weight:700;font-size:14px}.links a.whatsapp{background:#edf3ed;color:var(--green);border:1px solid #cbd8ce}.sources{font-size:11px;color:#56665e}.sources a{color:var(--green);overflow-wrap:anywhere}.print-action{margin:0 auto 18px;display:block;border:0;border-radius:999px;background:var(--green);color:white;padding:12px 20px;font-size:15px;cursor:pointer}@media print{@page{size:A4;margin:14mm}body{background:white}.wrap{max-width:none;padding:0}.sheet{padding:0;margin:0;border-radius:0}.print-action{display:none}a{color:inherit;text-decoration:none}.next,.disclaimer{break-inside:avoid}h1,h2{break-after:avoid}}</style></head><body><main class="wrap"><button id="printAction" class="print-action" onclick="window.print()">Save as PDF / Print</button><div class="brand">SAINTHAPPY<span>•</span>CO</div><section class="sheet"><div class="flower">✦</div><div class="eyebrow">YOUR MONEY HAPPINESS SNAPSHOT · ${escapeHtml(date)}</div><h1>Your values, your money, your reflection.</h1><p>This page captures your answers from a short reflective experience. It is a starting point for thinking — not a verdict about your financial life.</p><h2>Your Money Persona</h2><p><b>${escapeHtml(participantProfile.personality)}</b> · ${escapeHtml(participantProfile.lifeStage)} · ${escapeHtml(participantProfile.occupation)}</p><p>${escapeHtml((el("personaBio")?.textContent)||"")}</p><h2>Your Top 5 values</h2><div class="pills">${valuesHtml}</div><h2>Your snapshot</h2><div class="score">${safeScore}<span style="font-size:20px"> / 100</span></div><h2>${safeProfile}</h2><p>${safeReflection}</p><h2>Your responses</h2><ul>${answersText}</ul><div class="next"><h2 style="margin-top:0">Questions to take with you</h2><p>Which of your values has the most room in your life right now? Which one feels squeezed? What is one thing you would like to understand better about your finances?</p></div><div class="disclaimer" style="margin-top:22px"><b>Disclaimer</b><p>This experience is reflective in nature and is intended to help you think about your values and relationship with money. It is not a comprehensive assessment of your financial circumstances. For professional financial advice tailored to your needs, please reach out to Sharon to arrange an advisory session.</p></div><div class="ack-record"><h2 style="margin-top:0">Acknowledgement record</h2><p class="ack-status">☑ Acknowledgement confirmed</p><p>I acknowledge that this experience is reflective in nature and is intended to prompt personal reflection.</p><p>I understand that the results are not a comprehensive assessment of my financial circumstances and do not constitute personalised financial advice or a product recommendation.</p><p>If I want professional financial advice tailored to my circumstances, I can contact Sharon to arrange a separate advisory session.</p><p><b>Date and time recorded:</b> ${ackTime}</p><p style="margin-bottom:4px"><b>Signature</b></p>${signatureBlock}${typedSignature ? `<div style="font-family:Georgia,serif;font-size:20px;font-style:italic">${typedSignature}</div>` : ""}<div class="signature-line"></div><p style="font-size:11px;color:var(--muted);margin-top:6px">Signature provided by the participant in this browser session.</p></div><div class="sources" style="margin-top:18px"><b>Frameworks informing this reflection</b><p>Informed by <a href="https://selfdeterminationtheory.org/the-theory/" target="_self">Self-Determination Theory (SDT)</a>, the <a href="https://ppc.sas.upenn.edu/node/708" target="_self">PERMA model of well-being</a>, and the <a href="https://www.consumerfinance.gov/consumer-tools/financial-well-being/about/" target="_self">Consumer Financial Protection Bureau’s Financial Well-Being Scale</a>. This activity adapts broad ideas from these frameworks; it is not any of the original validated questionnaires or scales.</p></div><h2>Would you like to explore this further?</h2><p>Contact Sharon to ask about a Money Mapping conversation.</p><div class="links"><a href="https://www.instagram.com/sharonlinds/" target="_blank" rel="noopener noreferrer">Instagram ↗</a><a class="whatsapp" href="https://www.whatsapp.com/" target="_blank" rel="noopener noreferrer">Open WhatsApp ↗</a></div><p style="font-size:11px;color:var(--muted)">To contact Sharon, search for the WhatsApp username <b>sharonlinds</b>. A direct chat link requires a phone number or verified profile link.</p></section></main><script>document.getElementById("printAction");<\/script></body></html>`;
+  // Open the print-ready report from the user's click. If pop-ups are blocked,
+  // download the standalone HTML report so it can be opened locally and printed.
+  const reportBlob = new Blob([printView], {type: "text/html;charset=utf-8"});
+  const reportUrl = URL.createObjectURL(reportBlob);
+  const reportWindow = window.open(reportUrl, "_blank");
+  if (!reportWindow) {
+    const a = document.createElement("a");
+    a.href = reportUrl;
+    a.download = "Sainthappy_Money_Happiness_Report.html";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    alert("Your printable report has been downloaded as an HTML file. Open it in Safari or Chrome, then tap ‘Save as PDF / Print’ and choose ‘Save as PDF’ in the print dialog.");
+  }
+  setTimeout(() => URL.revokeObjectURL(reportUrl), 60000);
+}
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
+
+function openWhatsAppAndCopyUsername(){
+  const username="sharonlinds";
+  try {
+    const temp=document.createElement("textarea");
+    temp.value=username; temp.setAttribute("readonly","");
+    temp.style.position="fixed"; temp.style.opacity="0";
+    document.body.appendChild(temp); temp.select();
+    document.execCommand("copy"); temp.remove();
+  } catch(e) {}
+  window.open("https://www.whatsapp.com/", "_blank", "noopener,noreferrer");
+  alert("WhatsApp username copied: sharonlinds. In WhatsApp, search for this username. For a direct chat button, Sharon's WhatsApp phone number or verified profile link is needed.");
+}
+
+function backToSnapshot(){
+  ["explorePath","deepDivePath"].forEach(x=>el(x).classList.remove("active"));
+  el("measureResult").classList.add("active");
+  el("progress").textContent="Your Money Happiness";
+}
+async function copyDeepDiveMessage(){
+  const text=el("deepDiveMessage").value;
+  try{
+    await navigator.clipboard.writeText(text);
+    el("copyStatus").textContent="Message copied — paste it wherever you’d like to send it.";
+  }catch(e){
+    el("deepDiveMessage").focus();el("deepDiveMessage").select();
+    let ok=false;try{ok=document.execCommand("copy")}catch(err){}
+    el("copyStatus").textContent=ok?"Message copied — paste it wherever you’d like to send it.":"Select the message above and copy it to use wherever you’d like.";
+  }
+}
+
+["keep","maybe","no"].forEach(z=>setupDrop(z,z));
+setupDrop("pool","pool");
+</script>
+
+<div id="consentModal" role="dialog" aria-modal="true" aria-labelledby="consentTitle" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(23,42,32,.58);padding:20px;align-items:center;justify-content:center">
+  <div style="width:min(100%,520px);max-height:90vh;overflow:auto;background:#fffdf7;border:1px solid var(--line);border-radius:22px;padding:clamp(22px,5vw,32px);box-shadow:0 20px 70px rgba(0,0,0,.22);color:var(--ink)">
+    <div style="font-size:12px;letter-spacing:.08em;font-weight:700;color:var(--muted);margin-bottom:10px">BEFORE YOU DOWNLOAD</div>
+    <h2 id="consentTitle" style="font-family:Georgia,serif;color:var(--green);font-weight:500;font-size:28px;line-height:1.2;margin:0 0 14px">A quick acknowledgement</h2>
+    <p style="line-height:1.6">I acknowledge that this experience is reflective in nature and is intended to prompt personal reflection.</p>
+    <p style="line-height:1.6">I understand that the results are not a comprehensive assessment of my financial circumstances and do not constitute personalised financial advice or a product recommendation.</p>
+    <p style="line-height:1.6">If I want professional financial advice tailored to my circumstances, I can contact Sharon to arrange a separate advisory session.</p>
+    <label style="display:flex;gap:11px;align-items:flex-start;margin:20px 0;padding:14px;border:1px solid var(--line);border-radius:14px;background:#f8f4e9;line-height:1.45">
+      <input id="consentCheck" type="checkbox" onchange="updateConsentButton()" style="margin-top:4px;accent-color:var(--green);width:17px;height:17px;flex:0 0 auto">
+      <span><strong>I have read and acknowledge the statements above.</strong></span>
+    </label>
+    <div style="margin:18px 0 14px">
+      <label for="typedSignature" style="display:block;font-weight:700;margin-bottom:7px">Signature (type your name or sign below)</label>
+      <input id="typedSignature" type="text" placeholder="Type your full name" style="width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font:inherit;background:white;color:var(--ink)" />
+      <div style="font-size:12px;color:var(--muted);margin:12px 0 7px">Or draw your signature with your finger, stylus, mouse or trackpad.</div>
+      <canvas id="signaturePad" aria-label="Draw your signature here" style="display:block;width:100%;height:110px;background:white;border:1px solid var(--line);border-radius:12px;touch-action:none"></canvas>
+      <button type="button" class="btn secondary" onclick="clearSignature()" style="margin-top:8px">Clear drawn signature</button>
+      <p id="signatureRequired" style="display:none;color:#9b3d2d;font-size:13px;margin:8px 0 0">Please type your name or draw a signature to continue.</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn secondary" type="button" onclick="document.getElementById('consentModal').style.display='none'">Cancel</button>
+      <button class="btn" id="consentContinue" type="button" disabled onclick="acceptConsentAndDownload()">Create printable report</button>
+    </div>
+    <p style="font-size:11px;line-height:1.5;color:var(--muted);margin:16px 0 0">Your acknowledgement, date/time and signature will be included in the printable report. This is a participant-provided record, not an independently verified electronic signature.</p>
+  </div>
+</div>
+<script>window.addEventListener("load",()=>{const modal=document.getElementById("consentModal");if(modal){const observer=new MutationObserver(()=>{if(modal.style.display!=="none")setupSignaturePad();});observer.observe(modal,{attributes:true,attributeFilter:["style"]});}});</script>
+</body>
+</html>
